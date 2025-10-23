@@ -1,0 +1,615 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.2">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-CN"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;逻辑命题真值表生成器&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;link</p>
+<p class="p1"><span class="Apple-converted-space">    </span>rel="stylesheet"</p>
+<p class="p1"><span class="Apple-converted-space">    </span>href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"</p>
+<p class="p1"><span class="Apple-converted-space">  </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tailwind.config = {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>theme: {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>extend: {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>colors: {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>primary: '#2563eb',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>secondary: '#16a34a',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>neutral: '#64748b',</p>
+<p class="p1"><span class="Apple-converted-space">          </span>},</p>
+<p class="p1"><span class="Apple-converted-space">          </span>fontFamily: {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>sans: ['Inter', 'system-ui', 'sans-serif'],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style type="text/tailwindcss"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@layer utilities {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.content-auto {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>content-visibility: auto;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.btn-hover {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.input-focus {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.symbol-btn {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@apply w-10 h-10 flex items-center justify-center rounded-md text-white font-medium transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="bg-gray-50 font-sans min-h-screen"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="container mx-auto px-4 py-8 max-w-6xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;header class="text-center mb-10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-gray-800 mb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>逻辑命题真值表生成器</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p class="text-neutral"&gt;支持自定义变元和层次运算展示&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section class="bg-white rounded-xl shadow-md p-6 mb-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h2 class="text-xl font-semibold text-gray-700 mb-4"&gt;命题输入&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="flex flex-col md:flex-row gap-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label for="formula" class="block text-sm font-medium text-gray-700 mb-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>命题公式</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="flex items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input</p>
+<p class="p1"><span class="Apple-converted-space">              </span>type="text"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>id="formula"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>class="flex-1 px-3 py-2 border border-gray-300 rounded-md input-focus"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>placeholder="例如: ((A ∧ B) → C) ∨ D"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>value="((A∧B)→C)∨D"</p>
+<p class="p1"><span class="Apple-converted-space">            </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 逻辑联结词按钮组 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="mt-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>逻辑联结词:</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex flex-wrap gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-primary" data-symbol="∧" title="合取 (与)"&gt;∧&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-primary" data-symbol="∨" title="析取 (或)"&gt;∨&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-primary" data-symbol="¬" title="否定 (非)"&gt;¬&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-primary" data-symbol="→" title="蕴含"&gt;→&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-primary" data-symbol="↔" title="等价"&gt;↔&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-amber-600" data-symbol="(" title="左括号"&gt;(&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button class="symbol-btn bg-amber-600" data-symbol=")" title="右括号"&gt;)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 命题变元输入框 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="mt-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="variables" class="block text-sm font-medium text-gray-700 mb-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>命题变元 (用逗号分隔，至少2个)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input</p>
+<p class="p1"><span class="Apple-converted-space">          </span>type="text"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>id="variables"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>class="w-full px-3 py-2 border border-gray-300 rounded-md input-focus"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>placeholder="例如: p,q,r 或 A,B,C,D"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>value="A,B,C,D"</p>
+<p class="p1"><span class="Apple-converted-space">        </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- 生成真值表按钮 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="mt-6 text-right"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button</p>
+<p class="p1"><span class="Apple-converted-space">          </span>id="generate"</p>
+<p class="p1"><span class="Apple-converted-space">          </span>class="px-6 py-2 bg-secondary text-white rounded-md font-medium btn-hover"</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;i class="fas fa-table mr-2"&gt;&lt;/i&gt;生成真值表</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;section id="result" class="hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h2 class="text-xl font-semibold text-gray-700 mb-4"&gt;真值表结果&lt;/h2&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="formulaBreakdown" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h3 class="text-lg font-medium text-gray-800 mb-2"&gt;公式拆分过程&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="breakdownSteps" class="space-y-2 text-gray-700"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="overflow-x-auto bg-white rounded-xl shadow-md mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;table id="truthTable" class="min-w-full divide-y divide-gray-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;thead class="bg-gray-50"&gt;&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;tbody class="bg-white divide-y divide-gray-200"&gt;&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="formulaType" class="mt-4 p-4 rounded-lg"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/section&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// DOM 元素获取</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const formulaInput = document.getElementById('formula');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const variablesInput = document.getElementById('variables');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const generateBtn = document.getElementById('generate');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const resultSection = document.getElementById('result');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const truthTable = document.getElementById('truthTable');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const formulaTypeEl = document.getElementById('formulaType');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const symbolButtons = document.querySelectorAll('[data-symbol]');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const breakdownStepsEl = document.getElementById('breakdownSteps');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 逻辑联结词按钮：点击后将符号插入公式输入框</p>
+<p class="p1"><span class="Apple-converted-space">    </span>symbolButtons.forEach((btn) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>btn.addEventListener('click', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const symbol = btn.getAttribute('data-symbol');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 在光标位置插入符号</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const cursorPos = formulaInput.selectionStart;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const textBefore = formulaInput.value.substring(0, cursorPos);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const textAfter = formulaInput.value.substring(cursorPos);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>formulaInput.value = textBefore + symbol + textAfter;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 移动光标到插入符号后面</p>
+<p class="p1"><span class="Apple-converted-space">        </span>formulaInput.focus();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>formulaInput.selectionStart = cursorPos + 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>formulaInput.selectionEnd = cursorPos + 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 生成真值表按钮点击事件</p>
+<p class="p1"><span class="Apple-converted-space">    </span>generateBtn.addEventListener('click', generateTruthTable);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 生成真值表的核心函数</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function generateTruthTable() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const formula = formulaInput.value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const variablesText = variablesInput.value.trim();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 校验输入</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!variablesText) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert('请输入命题变元');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const variables = variablesText.split(',').map((v) =&gt; v.trim()).filter(v =&gt; v);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (variables.length &lt; 2) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert('请至少输入2个命题变元');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!formula) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert('请输入命题公式');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 验证变量是否只包含字母</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!variables.every(v =&gt; /^[a-zA-Z]$/.test(v))) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert('命题变元只能包含单个字母(a-z, A-Z)');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 递归分析公式结构，生成多层次拆分步骤</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const breakdownSteps = [];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>recursiveAnalyzeFormula(formula, variables, 0, breakdownSteps);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderBreakdownSteps(breakdownSteps);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 提取所有子公式（排除原始公式本身）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const subFormulas = [];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>extractSubFormulasRecursive(formula, variables, subFormulas);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 过滤掉与原始公式相同的子公式（避免重复）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const filteredSubFormulas = subFormulas.filter(sub =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 比较时去除外层括号，避免因括号导致的误判</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const cleanSub = removeOuterBrackets(sub.formula);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const cleanFormula = removeOuterBrackets(formula);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return cleanSub !== cleanFormula;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 生成所有变量的真值组合</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const truthCombinations = generateTruthCombinations(variables);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 计算每一行的逻辑值（包括所有子公式和最终结果）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const tableData = truthCombinations.map((combination) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const values = {};</p>
+<p class="p1"><span class="Apple-converted-space">        </span>variables.forEach((varName, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>values[varName] = combination[index];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 计算所有子公式（按优先级顺序）</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const subResults = {};</p>
+<p class="p1"><span class="Apple-converted-space">        </span>filteredSubFormulas.forEach(sub =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>subResults[sub.formula] = evaluateSubFormula(sub.formula, values);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 计算最终结果</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const finalResult = evaluateSubFormula(formula, values);</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>return { ...values, ...subResults, finalResult };</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 渲染真值表（子公式从左到右，最终结果列在最后且唯一）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderTruthTable(variables, filteredSubFormulas, formula, tableData);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 判断公式类型</p>
+<p class="p1"><span class="Apple-converted-space">      </span>determineFormulaType(tableData.map((row) =&gt; row.finalResult));</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 显示结果区域</p>
+<p class="p1"><span class="Apple-converted-space">      </span>resultSection.classList.remove('hidden');</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 滚动到结果区域</p>
+<p class="p1"><span class="Apple-converted-space">      </span>resultSection.scrollIntoView({ behavior: 'smooth' });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 移除公式外层可能存在的括号</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function removeOuterBrackets(formula) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let cleanFormula = formula;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>while (cleanFormula.startsWith('(') &amp;&amp; cleanFormula.endsWith(')')) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let balance = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let valid = true;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>for (let i = 0; i &lt; cleanFormula.length; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (cleanFormula[i] === '(') balance++;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (cleanFormula[i] === ')') balance--;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (balance === 0 &amp;&amp; i &lt; cleanFormula.length - 1) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>valid = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (valid) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>cleanFormula = cleanFormula.substring(1, cleanFormula.length - 1);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return cleanFormula;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 递归提取所有子公式（按运算优先级和层次）</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function extractSubFormulasRecursive(formula, variables, subFormulas) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 移除可能的外层括号</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let cleanFormula = removeOuterBrackets(formula);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 查找主运算符</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mainOperator = findMainOperator(cleanFormula);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (mainOperator) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (mainOperator.type === 'binary') {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 提取左操作数</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const leftPart = cleanFormula.substring(0, mainOperator.position).trim();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (!variables.includes(leftPart) &amp;&amp; leftPart !== '') {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>extractSubFormulasRecursive(leftPart, variables, subFormulas);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 提取右操作数</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const rightPart = cleanFormula.substring(mainOperator.position + 1).trim();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (!variables.includes(rightPart) &amp;&amp; rightPart !== '') {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>extractSubFormulasRecursive(rightPart, variables, subFormulas);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 将当前公式加入子公式列表</p>
+<p class="p1"><span class="Apple-converted-space">          </span>subFormulas.push({</p>
+<p class="p1"><span class="Apple-converted-space">            </span>formula: cleanFormula,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>precedence: getOperatorPrecedence(mainOperator.symbol)</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else if (mainOperator.type === 'unary') {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 提取操作数</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const operand = cleanFormula.substring(mainOperator.position + 1).trim();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (!variables.includes(operand) &amp;&amp; operand !== '') {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>extractSubFormulasRecursive(operand, variables, subFormulas);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 将当前公式加入子公式列表</p>
+<p class="p1"><span class="Apple-converted-space">          </span>subFormulas.push({</p>
+<p class="p1"><span class="Apple-converted-space">            </span>formula: cleanFormula,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>precedence: getOperatorPrecedence(mainOperator.symbol)</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 按优先级降序排序（高优先级先计算）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>subFormulas.sort((a, b) =&gt; b.precedence - a.precedence);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return subFormulas;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 递归分析公式结构，生成多层次拆分步骤</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function recursiveAnalyzeFormula(formula, variables, level, steps) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>steps.push({ level, content: `第 ${level + 1} 层: ${formula}` });</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 移除可能的外层括号</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let cleanFormula = removeOuterBrackets(formula);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 查找主运算符</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mainOperator = findMainOperator(cleanFormula);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (mainOperator) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>steps.push({<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>level: level + 1,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>content: `主逻辑运算符: ${mainOperator.symbol} (优先级: ${getOperatorPrecedence(mainOperator.symbol)})`<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (mainOperator.type === 'unary') { // 一元运算符 (¬)</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const operand = cleanFormula.substring(mainOperator.position + 1).trim();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>steps.push({ level: level + 1, content: `操作数: ${operand}` });</p>
+<p class="p1"><span class="Apple-converted-space">          </span>recursiveAnalyzeFormula(operand, variables, level + 2, steps);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else if (mainOperator.type === 'binary') { // 二元运算符</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const leftPart = cleanFormula.substring(0, mainOperator.position).trim();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const rightPart = cleanFormula.substring(mainOperator.position + 1).trim();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>steps.push({ level: level + 1, content: `左操作数: ${leftPart}` });</p>
+<p class="p1"><span class="Apple-converted-space">          </span>steps.push({ level: level + 1, content: `右操作数: ${rightPart}` });</p>
+<p class="p1"><span class="Apple-converted-space">          </span>recursiveAnalyzeFormula(leftPart, variables, level + 2, steps);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>recursiveAnalyzeFormula(rightPart, variables, level + 2, steps);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 检查是否为变量</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (variables.includes(cleanFormula)) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>steps.push({ level: level + 1, content: `命题变元: ${cleanFormula}` });</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>steps.push({ level: level + 1, content: `简单表达式: ${cleanFormula}` });</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 识别所有变量</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const formulaVariables = variables.filter(v =&gt; formula.includes(v));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>steps.push({ level: level + 1, content: `包含的命题变元: ${formulaVariables.join(', ')}` });</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 获取运算符优先级（数字越大优先级越高）</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function getOperatorPrecedence(operator) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const precedence = {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>'¬': 4,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>'∧': 3,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>'∨': 2,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>'→': 1,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>'↔': 0</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return precedence[operator] || 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 渲染公式拆分步骤</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function renderBreakdownSteps(steps) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breakdownStepsEl.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>steps.forEach(step =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const stepEl = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>stepEl.className = `pl-${step.level * 4} py-1`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>stepEl.innerHTML = step.content;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>breakdownStepsEl.appendChild(stepEl);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 生成变量的所有真值组合</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function generateTruthCombinations(variables) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (variables.length === 0) return [[]];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const [first, ...rest] = variables;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const restCombinations = generateTruthCombinations(rest);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return [</p>
+<p class="p1"><span class="Apple-converted-space">        </span>...restCombinations.map((combo) =&gt; [true, ...combo]),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>...restCombinations.map((combo) =&gt; [false, ...combo]),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 查找公式中的主逻辑运算符</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function findMainOperator(formula) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 处理括号</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (formula.startsWith('(') &amp;&amp; formula.endsWith(')')) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let balance = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>for (let i = 0; i &lt; formula.length; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (formula[i] === '(') balance++;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (formula[i] === ')') balance--;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (balance === 0 &amp;&amp; i &lt; formula.length - 1) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 括号不是最外层的</p>
+<p class="p1"><span class="Apple-converted-space">            </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>} else if (balance === 0 &amp;&amp; i === formula.length - 1) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 去除外层括号后递归查找</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return findMainOperator(formula.substring(1, formula.length - 1));</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 查找二元运算符（优先级从低到高）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const binaryOperators = [</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ symbol: '↔', precedence: 0 },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ symbol: '→', precedence: 1 },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ symbol: '∨', precedence: 2 },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ symbol: '∧', precedence: 3 }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>];</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>let balance = 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let i = formula.length - 1; i &gt;= 0; i--) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (formula[i] === ')') balance++;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (formula[i] === '(') balance--;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 只考虑括号外的运算符</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (balance === 0) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>for (const op of binaryOperators) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (formula[i] === op.symbol) {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>symbol: op.symbol,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>position: i,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'binary',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>precedence: op.precedence</p>
+<p class="p1"><span class="Apple-converted-space">              </span>};</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p2"><span class="Apple-converted-space">          </span></p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 查找否定运算符</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (formula[i] === '¬') {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 确保¬是作为运算符而不是其他用途</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (i === 0 || '∧∨→↔('.includes(formula[i-1])) {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>return {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>symbol: '¬',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>position: i,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'unary',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>precedence: 4</p>
+<p class="p1"><span class="Apple-converted-space">              </span>};</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>return null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 计算公式的逻辑值</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function evaluateSubFormula(formula, values) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 替换变量为真值（true/false）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let evaluated = formula;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (const [varName, value] of Object.entries(values)) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>evaluated = evaluated.replace(</p>
+<p class="p1"><span class="Apple-converted-space">          </span>new RegExp(`\\b${varName}\\b`, 'g'),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>value.toString()</p>
+<p class="p1"><span class="Apple-converted-space">        </span>);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 替换逻辑联结词为 JavaScript 可执行的运算</p>
+<p class="p1"><span class="Apple-converted-space">      </span>evaluated = evaluated</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.replace(/∧/g, '&amp;&amp;')</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.replace(/∨/g, '||')</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.replace(/¬/g, '!');</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 处理蕴含运算: a → b 等价于 !a || b</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (evaluated.includes('→')) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const parts = evaluated.split('→');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (parts.length &gt; 1) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>evaluated = parts.map((part, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (index === 0) {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>return `(!(${part.trim()}))`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">              </span>return part.trim();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}).join('||');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 处理等价运算: a ↔ b 等价于 (a ∧ b) ∨ (!a ∧ !b)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (evaluated.includes('↔')) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const iffParts = evaluated.split('↔');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (iffParts.length &gt; 1) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const left = `(${iffParts[0].trim()})`;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const right = `(${iffParts[1].trim()})`;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>evaluated = `((${left}&amp;&amp;${right})||(!${left}&amp;&amp;!${right}))`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 执行运算</p>
+<p class="p1"><span class="Apple-converted-space">      </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return new Function(...Object.keys(values), `return ${evaluated}`)(</p>
+<p class="p1"><span class="Apple-converted-space">          </span>...Object.values(values)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} catch (error) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert(`公式计算错误: ${error.message}\n请检查公式格式是否正确`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return null;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 渲染真值表（子公式从左到右，最终结果列在最后且唯一）</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function renderTruthTable(variables, subFormulas, formula, tableData) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const thead = truthTable.querySelector('thead');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const tbody = truthTable.querySelector('tbody');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 清空旧内容</p>
+<p class="p1"><span class="Apple-converted-space">      </span>thead.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tbody.innerHTML = '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 生成表头（变量 + 子公式 + 最终结果）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const headerRow = document.createElement('tr');</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 变量列</p>
+<p class="p1"><span class="Apple-converted-space">      </span>variables.forEach((varName) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const th = document.createElement('th');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>th.textContent = varName;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>headerRow.appendChild(th);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 子公式列（按层次和顺序从左到右）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>subFormulas.forEach(sub =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const th = document.createElement('th');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>th.className = 'px-6 py-3 text-left text-xs font-medium bg-blue-50 text-blue-700 uppercase tracking-wider';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>th.textContent = sub.formula;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>headerRow.appendChild(th);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 最终结果列（放在最后，确保唯一）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const resultTh = document.createElement('th');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>resultTh.className = 'px-6 py-3 text-left text-xs font-medium bg-primary/10 text-primary uppercase tracking-wider';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>resultTh.textContent = formula;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>headerRow.appendChild(resultTh);</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>thead.appendChild(headerRow);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 生成表体（每一行数据）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tableData.forEach((row, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const tr = document.createElement('tr');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>tr.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>tr.classList.add('hover:bg-gray-100', 'transition-colors');</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 变量列</p>
+<p class="p1"><span class="Apple-converted-space">        </span>variables.forEach((varName) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const td = document.createElement('td');</p>
+<p class="p1"><span class="Apple-converted-space">          </span>td.className = 'px-6 py-4 whitespace-nowrap text-sm';</p>
+<p class="p1"><span class="Apple-converted-space">          </span>td.textContent = row[varName] ? 'T' : 'F';</p>
+<p class="p1"><span class="Apple-converted-space">          </span>tr.appendChild(td);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 子公式列（按顺序从左到右）</p>
+<p class="p1"><span class="Apple-converted-space">        </span>subFormulas.forEach(sub =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const td = document.createElement('td');</p>
+<p class="p1"><span class="Apple-converted-space">          </span>td.className = 'px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600';</p>
+<p class="p1"><span class="Apple-converted-space">          </span>td.textContent = row[sub.formula] ? 'T' : 'F';</p>
+<p class="p1"><span class="Apple-converted-space">          </span>tr.appendChild(td);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 最终结果列（放在最后，确保唯一）</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const resultTd = document.createElement('td');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>resultTd.className = 'px-6 py-4 whitespace-nowrap text-sm font-medium';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>resultTd.textContent = row.finalResult ? 'T' : 'F';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>resultTd.classList.add(row.finalResult ? 'text-green-600' : 'text-red-600');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>tr.appendChild(resultTd);</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>tbody.appendChild(tr);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 判断公式类型（永真式、永假式、可满足式）</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function determineFormulaType(results) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const allTrue = results.every((r) =&gt; r);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const allFalse = results.every((r) =&gt; !r);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>let type, message, className;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (allTrue) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>type = '永真式 (重言式)';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>message = '该命题在所有情况下都为真，是一个永真式（重言式）。';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>className = 'bg-green-50 border-l-4 border-green-500 text-green-700';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else if (allFalse) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>type = '永假式 (矛盾式)';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>message = '该命题在所有情况下都为假，是一个永假式（矛盾式）。';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>className = 'bg-red-50 border-l-4 border-red-500 text-red-700';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>type = '可满足式 (偶然式)';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>message = '该命题在某些情况下为真，在某些情况下为假，是一个可满足式（偶然式）。';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>className = 'bg-blue-50 border-l-4 border-blue-500 text-blue-700';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>formulaTypeEl.className = ` ${className} p-4`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>formulaTypeEl.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h3 class="text-lg font-semibold"&gt;命题类型: ${type}&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="mt-2"&gt;${message}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
